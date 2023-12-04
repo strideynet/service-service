@@ -35,7 +35,13 @@ func tryMain() error {
 	}
 	srv := grpc.NewServer(
 		grpc.Creds(
-			grpccredentials.MTLSServerCredentials(source, source, tlsconfig.AuthorizeAny()),
+			grpccredentials.MTLSServerCredentials(
+				source,
+				source,
+				// AuthorizeAny is used here so that more advanced authz
+				// decisions can be made at the RPC level.
+				tlsconfig.AuthorizeAny(),
+			),
 		),
 	)
 	bookv1.RegisterBookServiceServer(srv, bookSvc)
@@ -68,6 +74,14 @@ func (b *BookService) ListBooks(ctx context.Context, req *bookv1.ListBooksReques
 }
 
 func (b *BookService) DeleteBook(ctx context.Context, req *bookv1.DeleteBookRequest) (*bookv1.DeleteBookResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	id, _ := grpccredentials.PeerIDFromContext(ctx)
+	b.log.Info(
+		"DeleteBook",
+		slog.String("id", id.String()),
+		slog.String("id.path", id.Path()),
+	)
+	if id.Path() != "admin" {
+		return nil, fmt.Errorf("not authorized")
+	}
+	return &bookv1.DeleteBookResponse{}, nil
 }
