@@ -29,6 +29,7 @@ func tryMain() error {
 	if err != nil {
 		return fmt.Errorf("creating workloadapi src: %w", err)
 	}
+	defer source.Close()
 
 	bookSvc := &BookService{
 		log: log,
