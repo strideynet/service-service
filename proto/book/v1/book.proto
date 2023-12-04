@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package library.book.v1;
+
+service BookService {
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse);
+  rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
+}
+
+message Book {
+  string isbn = 1;
+  string title = 2;
+}
+
+message ListBooksRequest {
+
+}
+
+message ListBooksResponse {
+  repeated Book books = 1;
+}
+
+message GetBookRequest {
+  string isbn = 1;
+}
+
+message GetBookResponse {
+  Book book = 1;
+}
+
+message DeleteBookRequest {
+  string isbn = 1;
+}
+
+message DeleteBookResponse {
+  string isbn = 1;
+}
+
+
